@@ -56,14 +56,22 @@ def cached_results():
 ##############################################################################
 def challenge():
     st.title('Hello challenge')
-    
+    kLoam=3.06374218 *10**-13 # m^2
+    pkLoam=-math.log10(kLoam) #~12.5
+    st.markdown('A good loam for growing plants has a retention of $R=12.5$ \
+                (permeability $k=3·10^{-13}~\mathrm{m}^2$) (Cosby *et al.* \
+                Water Resources Research, Vol. 20(6), 1984).')
+    st.markdown('*If pk is too high, avoid overwatering or avoid walking on wet soil (compacts it, further increasing pk)\
+                 *aerate soil to decrease pk\
+                 *Add mulch or compost to increase pk')
+        
 
 ##############################################################################
 #### APP LEVEL CODE ####    
 # Define keys for each page name for easier reference internal to this code
 PageDictionary = {
-  "What is soil permeability?": "splashpage",
-  "Build your own DIY permeameter": "howBuild",
+  "What is soil hydraulic conductivity?": "splashpage",
+  "Build your own DIY soil flow-meter": "howBuild",
   "Process experiment data": "dataProcessing",
   "Compare soils": "classData",
   "Designer soil challenge":"challenge"
@@ -72,11 +80,11 @@ PageDictionary = {
 # Select Page and convert displayed name to my code key for page using PageDictionary
 pageSelect=PageDictionary[\
           st.sidebar.radio("Pick a page",\
-                               ('What is soil permeability?',\
-                                'Build your own DIY permeameter',\
+                               ('What is soil hydraulic conductivity?',\
+                                'Build your own DIY soil flow-meter',\
                                 'Process experiment data',\
-                                'Compare soils',\
-                                'Designer soil challenge'))]
+                                'Compare soils'))]#,\
+                                #'Designer soil challenge'))]
 
 ## Set up some custom html commands
 st.markdown("""

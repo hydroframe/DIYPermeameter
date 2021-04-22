@@ -16,8 +16,16 @@ from sklearn.linear_model import LinearRegression
 # from scipy.optimize import curve_fit
 from myStreamlit import myCaption
 
+import base64
+import matplotlib.pyplot as plt
+from scipy.optimize import curve_fit
+from myStreamlit import myCaption
+import matplotlib.ticker as mticker
+
 
 def dataProcessing(cached_name, cached_height, cached_data, cached_dataSets):
+    def linFunc(x,a):
+        return a*x   
     st.title('Let''s process the data from your experiment!')
     st.write('Use this online tool to enter data from your experiment. '
              'It will compute the **permeability** of your soil sample. '
@@ -69,34 +77,85 @@ def dataProcessing(cached_name, cached_height, cached_data, cached_dataSets):
                 for i in range(len(cached_data)):
                    cached_data.pop()
     df_cache=pd.DataFrame(cached_data)
-    if df_cache.size>0:
+    if df_cache.size>1:
         st.write(df_cache)
-        scatter_chart = st.altair_chart(
-            alt.Chart(df_cache)
-                .mark_circle(size=60)
-                .encode(x='Water height (cm)', y='Time (s)')
-                .interactive()
-        )
+    if df_cache.size>2:
         
-        if st.button("Save this sample data set"):
-            cached_dataSets.append({'SampleName':sampleName,
-                                    'df':df_cache,
-                                    'height':cached_height})
-    st.markdown('Your permeability-meter works by monitoring the speed ($U$) \
+        ######### Display data plots #########     
+        ## Initialize figure
+        maxH=0
+        maxV=0
+        
+        ## Process, Save, and Plot data 
+        fig, (ax1a, ax1b) = plt.subplots(nrows=1, ncols=2, figsize=(8, 3))
+        colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
+        
+        
+        heights=df_cache['Water height (cm)']
+        times=df_cache['Time (s)']
+        vels=[-(h2-h1)/(t2-t1) for h1,h2,t1,t2 in 
+              zip(heights[0:-1],heights[1::],times[0:-1],times[1::])]
+        heightsAv=[(h1+h2)/2/cached_height[0]['Soil sample height (cm)'] for h1,h2 in zip(heights[1::],heights[0:-1])]
+        
+        maxH=max([maxH, max(heightsAv)])
+        maxV=max([maxV, max(vels)])
+        
+        ax1a.scatter(x=heights,
+                   y=times,
+                   marker='o')
+        ax1b.scatter(x=heightsAv,
+                   y=vels,
+                   marker='o')
+        ## Curve fitting
+        [mdl, mdlcov] = curve_fit(linFunc, heightsAv, vels) #units of s
+        MyConductivity=mdl*cached_height[0]['Soil sample height (cm)']*60
+        # Plot fit
+        linH=np.linspace(0, maxH)
+        ax1b.plot(linH, linH*mdl, '--', linewidth=2)
+        ## Format axes
+        
+        ax1a.set_xlabel('Water Height (cm)', fontsize=12)
+        ax1a.set_ylabel('Time (s)', fontsize=12)
+        ax1b.set_xlabel('Water Height / Soil height', fontsize=12)
+        ax1b.set_ylabel('Water speed (cm/s)', fontsize=12)
+        ax1b.set_xlim([0, 1.1*maxH])
+        ax1b.set_ylim([0, 1.1*maxV])
+        
+        # loosen subplot spacing
+        plt.subplots_adjust(left=0.1,
+                        bottom=0.1, 
+                        right=0.9, 
+                        top=0.9, 
+                        wspace=0.4, 
+                        hspace=0.4)
+        st.write(fig)
+        # st.write(MyConductivity[0])
+        st.subheader('How this site computes your hydraulic conductivity')
+        st.markdown('Your flow-meter works by monitoring the speed ($U$) \
              of water as it passes through your soil sample (height $L$). \
-             Given the height of the water $h$, and some other constants \
-             for water that are known. Given some other known \
-             (viscosity $µ$, density $ρ$, gravitational acceleration $g$) \
-             the permeability $k$ can be computed using a formula called \
+             Given the height of the water $h$, the hydraulic conductivity \
+             $K$ can be computed using a formula called \
              **Darcy''s Law**:')
-    st.latex('k=(µLU)/(ρgh)')
-    st.markdown('Since you have the speed recorded for many different \
+        st.latex('U=K(h/L)')
+        st.markdown('Since you have the speed recorded for many different \
                 water heights, we can get an even better estimate by \
                 plotting a best fit line for your data of velocity $U$ \
-                versus water height $h$:')
-    st.latex('U=(ρgk)/(µL)·h')
-    st.markdown('The slope of this best fit line is then $(ρgk)/(µL)$. \
-                This site then directly computes $k$ from this slope to \
-                give you the permeability of your sample, and the retention $pk$!')           
+                versus water height divided by soil height $h/L$. The slope \
+                    of this best fit line (or steepness of the line) is the \
+                        hydraulic conductivity $K$. \
+                *Can you explain now how the hydraulic conductivity is related \
+                to the speed that water drains, but is not exactly the same?*')
+        st.subheader('Your sample "'+cached_name[0]['Sample name']+'" has a hydraulic conductivity of '+'{:.2f} cm/min'.format(MyConductivity[0]))
+        ######## Sample saving
+        if st.button("Save this sample data set"):
+            sampleNameList=['' for i in range(len(df_cache))]
+            sampleNameList[0]=cached_name[0]['Sample name']
+            cached_heightList=['' for i in range(len(df_cache))]
+            cached_heightList[0]=cached_height[0]['Soil sample height (cm)']
+            cached_dataSets.append(pd.DataFrame({'Sample name':sampleNameList,
+                                                 'Sample height (cm)':cached_heightList,    
+                                    'Time (s)':df_cache['Time (s)'],
+                                    'Water height (cm)':df_cache['Water height (cm)']}))
+               
         
         

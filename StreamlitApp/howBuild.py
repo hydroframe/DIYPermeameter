@@ -15,7 +15,7 @@ from myStreamlit import myCaption
 
 
 def howBuild():
-    st.title('Build your own DIY permeability-meter!')
+    st.title('Build your own DIY soil flow-meter!')
     st.header('Supplies:')
     text,pic1=st.beta_columns((3,2))
     size=200
@@ -26,10 +26,10 @@ def howBuild():
         st.markdown("""
             * **Plastic jar** – Anything plastic with a screw cap. Peanut \
                 butter jars work well.
-            * **Scissors or hammer** – have a grown up help you break \
-                \away the top of the jar cap: make sure to leave the sides \
+            * **Scissors or hammer** – to have a grown up help you break \
+                away the top of the jar cap: make sure to leave the sides \
                     of the cap with the screw threading! 
-            * **Soil or other grains** – to measure the permeability of \
+            * **Soil or other grains** – to measure the hydraulic conductivity of \
                 (see below for soils that work well).
             * **Cheesecloth** – to hold soil in.
             * **Ruler and Marker** – to mark lengths on bottle.
@@ -38,12 +38,12 @@ def howBuild():
             """)
     with pic1:
         st.image('images\SketchJar.jpg')
-        myCaption('Figure 1: Features to look for in the perfect flow meter jar.')
+        myCaption('Figure 1: Features to look for in the perfect flow-meter jar.')
         st.image('images\PeanutJar.jpeg')
         myCaption('Figure 2: For example, this plastic peanut butter jar works well.')
         
         
-    st.header('Building your permeameter:')
+    st.header('Building your flow-meter:')
     text,pic1=st.beta_columns((1,1))
     size=200
     with text:
@@ -72,7 +72,7 @@ def howBuild():
                 minutes to drain so that you can watch it happen. \
                 Try modifying your setup until you are happy with how quickly \
                     the water drains.  \n
-            6. **Measure** the permeability of this test sample using the \
+            6. **Measure** the hydraulic conductivity of this test sample using the \
                 directions below!
             """)
     with pic1:
@@ -85,32 +85,29 @@ def howBuild():
         st.image('images\Build4.jpeg', width=size)
         myCaption('Figure 6: Attach cheesecloth using screw cap')
         st.image('images\Build5.jpeg', width=size)
-        myCaption('Figure 7: Prototype permeability-meter ready for testing')
+        myCaption('Figure 7: Prototype flow-meter ready for testing')
 
         
     st.header('Experiment:')
     text,vid=st.beta_columns((1.8,1))
     with text:
         st.markdown("""
-            1. **Sample selection:** Fill your permeability-meter with a little \
+            1. **Sample selection:** Fill your flow-meter with a little \
                 bit of your gravel or soil sample. Try to fill it up to one of \
                 the lines you marked, like 5 cm or 2 in. Write down this soil height.
-            1. **Prepare setup:** Use your sink to fill the bottle to the top \
-                with water, and the quickly close off the top with the screw cap. \
-                The cap should stop the water from flowing out the bottom, so \
-                you can get ready for the experiment. Place your bottle above \
-                a bucket, mason jar, or the drain of your sink so the water can \
-                flow freely once the cap is unscrewed.
-            1. **Observe:** When you’re ready to go, unscrew the cap and watch \
+            1. **Prepare setup:** Pour water through your setup and let it drain \
+                a few times to let the soil settle in.
+            1. **Observe:** When you’re ready to go and the soil seems settlesd,\
+                quickly pour water up to the top and watch \
                 the water drain. How quickly does it drain? Take notes about \
                 how long it takes to completely drain, and if you would \
-                categorize the sample as high permeability (water moves through \
-                it quickly) or low permeability (water moves through it slowly).
+                categorize the sample as high hydraulic conductivity (water moves through \
+                it quickly) or low hydraulic conductivity (water moves through it slowly).
             1. **Measure:** To be a bit more quantitative, use a stopwatch to \
                 measure the actual speed. Write down the time on the stopwatch \
                 when the water passes each marker, or use a camera to record \
                 the experiment, and then re-watch the video. You can compute \
-                the actual permeability (and retention) from this data using \
+                the actual hydraulic conductivity from this data using \
                 the **process experiment data** tab on the left.
             1. **Iterate:** When engineers design and build systems, they \
                 iterate between testing out their setup and redesigning a \
@@ -118,18 +115,19 @@ def howBuild():
                 it better! You might try using different building materials, \
                 constructing it differently, or changing how you watch and \
                 record the experiment. **Water taking too long to drain?** \
-                Try packing your permeability-meter with a shorter height of \
+                Try packing your soil flow-meter with a shorter height of \
                 your soil sample: the thinner sample will have less resistance \
                 to flow, so the experiment will run faster.
                 Feel free to go back and forth between \
                 designing, building, and testing your experimental setup until \
                 you are happy with how it works. 
             1. **Explore:** Now you’re ready to start measuring real soil \
-                samples! Try exploring your neighborhood with a hand trowel \
+                samples! Try exploring your neighborhood with a hand shovel \
+                    or a sturdy spoon \
                 to collect soil samples to measure, and record what you find. 
-            1. **Learn:** Read more about what soil permeability means for \
+            1. **Learn:** Read more about what soil conductivity means for \
                 plants as changing climate alter rainfall on the **what is \
-                soil permeability** tab, and attempt the **designer soil\
+                soil hydraulic conductivity** tab, and attempt the **designer soil\
                 challenge** to try designing the best soil for growing plants!
             """)
     with vid:
