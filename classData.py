@@ -5,8 +5,6 @@ Created on Tue Apr  6 21:40:24 2021
 @author: chrst
 """
 import streamlit as st
-import altair as alt
-import time
 import math
 import numpy as np
 import pandas as pd
@@ -14,7 +12,6 @@ import base64
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 from myStreamlit import myCaption
-import matplotlib.ticker as mticker
 
 def classData(cached_sets,cached_results):
     numSamples=len(cached_sets)
