@@ -8,7 +8,10 @@ Created on Sun Mar 28 19:44:17 2021
 import streamlit as st
 from utils.myStreamlit import myCaption
 
+
 def splashPage():
+    image_path = 'assets/images'
+
     st.title('DIY soil flow-meter')
     st.markdown('This site helps you build your own do-it-yourself (DIY) **soil flow-meter** \
                  with materials around your home, and measure your soil''s \
@@ -43,16 +46,16 @@ def splashPage():
                  'Responding to climate change in these regions should look '
                  'different too!')
     with col2:
-        st.image('images/SketchRegion.png')
+        st.image(f'{image_path}/SketchRegion.png')
         myCaption('<b>Figure 1</b>: Soils in different regions can drain water at '
                  'different speeds. This means that soils can be too wet or '
                  'too dry for plants')
-        st.image('images/Seesaw.png')
+        st.image(f'{image_path}/Seesaw.png')
         myCaption('<b>Figure 2</b>: A soil with a high hydraulic conductivity \
                   drains quickly, and will tend to dry faster. A soil with a low \
                   hydraulic conductivity drains slowly, and will tend to stay \
                   wet longer')  
-        st.image('images/MapConductivity.png')
+        st.image(f'{image_path}/MapConductivity.png')
         myCaption('<b>Figure 3</b>: Map of soil types across USA. Colors represent \
                  changes in soil hydraulic conductivity (adapted from Gleeson \
                 <i>et al.</i> Geophysical Research Letters 38(2) 2011.')  
@@ -102,10 +105,10 @@ def splashPage():
         
         
     with col2:
-        st.image('images/PicRealPermeameter.png',width=300)
+        st.image(f'{image_path}/PicRealPermeameter.png',width=300)
         myCaption('<b>Figure 4</b>: A research-grade flow-meter \
                   (falling head permeameter). Image from groundtest.co.nz')
-        st.image('images/SketchBasicPermeameter.png')
+        st.image(f'{image_path}/SketchBasicPermeameter.png')
         myCaption('<b>Figure 5</b>: Schematic of a soil flow-meter, which \
                   works by measuring the speed that \
                   water flows through a soil sample.')
@@ -122,7 +125,7 @@ def splashPage():
                  'you measure the hydraulic conductivity of some soils near your home, '
                  'and compare them to other soils!')
     with col2:
-        st.image('images/PicWorking.jpg')
+        st.image(f'{image_path}/PicWorking.jpg')
         myCaption('<b>Figure 6</b>: A DIY soil flow-meter you can build at home!')
         
 

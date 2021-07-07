@@ -13,13 +13,16 @@ import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 from utils.myStreamlit import myCaption
 
-def classData(cached_sets,cached_results):
+
+def classData(cached_sets, cached_results):
     numSamples=len(cached_sets)
     # st.write(cached_sets)
     strList=[cached_sets[i]["Sample name"][0] for i in range(numSamples)]
     # st.write(strList)
-    def linFunc(x,a):
-        return a*x   
+
+    def linFunc(x, a):
+        return a*x
+
     ######### Physical Parameters ######### 
     visc=0.00089 #Pa*s
     rho=1000 #kg/m^3
@@ -141,7 +144,8 @@ def classData(cached_sets,cached_results):
                     cached_sets.pop() # clear all samples   
                 should_clear_samples=False
                 ### Hoang: I think I need some way to automatically rerun here ###
-    ######### Display samples ######### 
+
+    ######### Display samples #########
     numSamples=len(cached_sets)
     strList=[cached_sets[i]["Sample name"][0] for i in range(numSamples)]
     
@@ -155,7 +159,7 @@ def classData(cached_sets,cached_results):
         st.write('Upload a sample or process the data using the **Process \
                  experiment data** tab')
     else:
-        ######### Display data plots #########     
+        ######### Display data plots #########
         ## Initialize figure
         maxH=0
         maxV=0
@@ -192,8 +196,8 @@ def classData(cached_sets,cached_results):
             # Plot fit
             linH=np.linspace(0, maxH)
             ax1b.plot(linH, linH*mdl, '--', linewidth=2)
+
         ## Format axes
-        
         ax1a.set_xlabel('Water Height (cm)', fontsize=12)
         ax1a.set_ylabel('Time (s)', fontsize=12)
         ax1a.legend([cached_sets[i]['Sample name'][0]
@@ -231,6 +235,7 @@ def classData(cached_sets,cached_results):
         listPerm=["{:.2e}".format(cached_results[i]['Permeability'][0]) for i in range(numSamples)]
         listRetention=["{:.2f}".format(cached_results[i]['Retention'][0]) for i in range(numSamples)]
         listCond=["{:.2f}".format(cached_results[i]['Conductivity'][0]) for i in range(numSamples)]
+
         #########  Display permability results ######### 
         # leftB,colN,colP,colR,rightB=st.beta_columns((.5,1,1,1,.5))
         # with colN:
@@ -255,7 +260,7 @@ def classData(cached_sets,cached_results):
         with col:
             st.write(df_perms)
             
-        ## Compare to real soil distributions    
+        ## Compare to real soil distributions
         st.header('Compare with real soils')
         col1,col2=st.beta_columns((1,1))
         with col1:
@@ -271,17 +276,20 @@ def classData(cached_sets,cached_results):
                     In the real world, this means that the water speed \
                     also depends on the amount of water in the soil.')
             st.markdown('When looking at a map (Figure 1), it is usually convenient \
-                    to separate soils into a few cateogories, so it is easier \
+                    to separate soils into a few categories, so it is easier \
                     to talk about the conductivity and water content in different regions. \
                     Let''s see how your samples compare to these ranges:')
+
         with col2:
-            st.image('images\MapConductivity.png')
+            st.image('assets/images/MapConductivity.png')
             myCaption('<b>Figure 1</b>: Map of soil types across USA. Colors represent \
                  changes in soil water retention (adapted from Gleeson \
-                <i>et al.</i> Geophysical Research Letters 38(2) 2011.') 
+                <i>et al.</i> Geophysical Research Letters 38(2) 2011.')
+
         numReal=len(df_cond['low'])
         fig2, ax2 = plt.subplots(nrows=1, ncols=1, \
                          figsize=(8, len(df_cond['low'])*.5+numSamples*.5))
+
         for i in range(numReal):
             ax2.plot([df_cond['low'][i], df_cond['high'][i]],[-1-i, -1-i],'-', linewidth=4)
             plt.text(x=10**((math.log10(df_cond['low'][i])+math.log10(df_cond['high'][i]))/2), y=-1-i, s=df_cond['name'][i], \
