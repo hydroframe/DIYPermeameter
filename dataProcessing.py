@@ -4,23 +4,11 @@ Created on Fri Mar 26 13:00:50 2021
 
 @author: chrst
 """
-# from MultiApp2 import MultiApp
 import streamlit as st
-import altair as alt
-# import time
-# import math
 import numpy as np
 import pandas as pd
-# import matplotlib.pyplot as plt
-from sklearn.linear_model import LinearRegression
-# from scipy.optimize import curve_fit
-from myStreamlit import myCaption
-
-import base64
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
-from myStreamlit import myCaption
-import matplotlib.ticker as mticker
 
 
 def dataProcessing(cached_name, cached_height, cached_data, cached_dataSets):

@@ -4,14 +4,10 @@ Spyder Editor
 
 This is a temporary script file.
 """
-from MultiApp2 import MultiApp
 import streamlit as st
-import time
 import math
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.linear_model import LinearRegression
 from scipy.optimize import curve_fit
 
 

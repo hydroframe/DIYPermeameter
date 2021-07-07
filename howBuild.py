@@ -6,11 +6,6 @@ Created on Sun Mar 28 19:44:17 2021
 """
 
 import streamlit as st
-import altair as alt
-import time
-import math
-import numpy as np
-import pandas as pd
 from myStreamlit import myCaption
 
 
