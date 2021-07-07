@@ -6,10 +6,10 @@ This is a temporary script file.
 """
 import streamlit as st
 import math
-from dataProcessing import dataProcessing
-from splashPage import splashPage
-from classData import classData
-from howBuild import howBuild
+from pages.dataProcessing import dataProcessing
+from pages.splashPage import splashPage
+from pages.classData import classData
+from pages.howBuild import howBuild
 
 
 ##############################################################################

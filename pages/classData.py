@@ -11,7 +11,7 @@ import pandas as pd
 import base64
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
-from myStreamlit import myCaption
+from utils.myStreamlit import myCaption
 
 def classData(cached_sets,cached_results):
     numSamples=len(cached_sets)
