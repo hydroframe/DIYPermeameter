@@ -37,9 +37,9 @@ def howBuild():
             * **Jar or bucket** – to collect water runoff.
             """)
     with pic1:
-        st.image('images\SketchJar.jpg')
+        st.image('images/SketchJar.jpg')
         myCaption('Figure 1: Features to look for in the perfect flow-meter jar.')
-        st.image('images\PeanutJar.jpeg')
+        st.image('images/PeanutJar.jpeg')
         myCaption('Figure 2: For example, this plastic peanut butter jar works well.')
         
         
@@ -76,15 +76,15 @@ def howBuild():
                 directions below!
             """)
     with pic1:
-        st.image('images\Build1.jpeg',width=size)
+        st.image('images/Build1.jpeg',width=size)
         myCaption('Figure 3: Cut the bottom off the jar')
-        st.image('images\Build2.jpeg', width=size)
+        st.image('images/Build2.jpeg', width=size)
         myCaption('Figure 4: Mark heights in centimeters, starting at the cap')
-        st.image('images\Build3.jpeg', width=size)
+        st.image('images/Build3.jpeg', width=size)
         myCaption('Figure 5: Break hole in center of screw cap')
-        st.image('images\Build4.jpeg', width=size)
+        st.image('images/Build4.jpeg', width=size)
         myCaption('Figure 6: Attach cheesecloth using screw cap')
-        st.image('images\Build5.jpeg', width=size)
+        st.image('images/Build5.jpeg', width=size)
         myCaption('Figure 7: Prototype flow-meter ready for testing')
 
         
@@ -131,7 +131,7 @@ def howBuild():
                 challenge** to try designing the best soil for growing plants!
             """)
     with vid:
-        filenames=['images\gravel_1x.mp4','images\sand_10x.mp4']
+        filenames=['images/gravel_1x.mp4', 'images/sand_10x.mp4']
         for i in range(2):
             video_file = open(filenames[i], 'rb')
             video_bytes = video_file.read()
