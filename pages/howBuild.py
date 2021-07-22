@@ -14,9 +14,9 @@ def howBuild():
 
     st.title('Build your own DIY soil flow-meter!')
     st.header('Supplies:')
-    text,pic1=st.beta_columns((3,2))
-    size=200
-    
+    text, pic1 = st.beta_columns((3, 2))
+    size = 200
+
     with text:
         st.markdown("""
             * **Plastic jar** – Anything plastic with a screw cap. Peanut \
@@ -31,16 +31,17 @@ def howBuild():
             * **Phone camera or stopwatch** – to time water motion.
             * **Jar or bucket** – to collect water runoff.
             """)
+
     with pic1:
         st.image(f'{image_path}/SketchJar.jpg')
         myCaption('Figure 1: Features to look for in the perfect flow-meter jar.')
+
         st.image(f'{image_path}/PeanutJar.jpeg')
         myCaption('Figure 2: For example, this plastic peanut butter jar works well.')
-        
-        
+
     st.header('Building your flow-meter:')
-    text,pic1=st.beta_columns((1,1))
-    size=200
+    text, pic1 = st.beta_columns((1, 1))
+    size = 200
     with text:
         st.markdown("""
             1. **Cut** the bottom off of your plastic jar with some scissors \
@@ -70,21 +71,25 @@ def howBuild():
             6. **Measure** the hydraulic conductivity of this test sample using the \
                 directions below!
             """)
+
     with pic1:
-        st.image(f'{image_path}/Build1.jpeg',width=size)
+        st.image(f'{image_path}/Build1.jpeg', width=size)
         myCaption('Figure 3: Cut the bottom off the jar')
+
         st.image(f'{image_path}/Build2.jpeg', width=size)
         myCaption('Figure 4: Mark heights in centimeters, starting at the cap')
+
         st.image(f'{image_path}/Build3.jpeg', width=size)
         myCaption('Figure 5: Break hole in center of screw cap')
+
         st.image(f'{image_path}/Build4.jpeg', width=size)
         myCaption('Figure 6: Attach cheesecloth using screw cap')
+
         st.image(f'{image_path}/Build5.jpeg', width=size)
         myCaption('Figure 7: Prototype flow-meter ready for testing')
 
-        
     st.header('Experiment:')
-    text,vid=st.beta_columns((1.8,1))
+    text, vid = st.beta_columns((1.8, 1))
     with text:
         st.markdown("""
             1. **Sample selection:** Fill your flow-meter with a little \
@@ -125,15 +130,10 @@ def howBuild():
                 soil hydraulic conductivity** tab, and attempt the **designer soil\
                 challenge** to try designing the best soil for growing plants!
             """)
+
     with vid:
-        filenames=[f'{image_path}/gravel_1x.mp4', f'{image_path}/sand_10x.mp4']
+        filenames = [f'{image_path}/gravel_1x.mp4', f'{image_path}/sand_10x.mp4']
         for i in range(2):
             video_file = open(filenames[i], 'rb')
             video_bytes = video_file.read()
             st.video(video_bytes)
-
-        
-
-
-
-    
