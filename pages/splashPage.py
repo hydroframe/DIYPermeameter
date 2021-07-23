@@ -9,9 +9,7 @@ import streamlit as st
 from utils.myStreamlit import myCaption
 
 
-def splashPage():
-    image_path = 'assets/images'
-
+def splashPage(image_path):
     st.title('DIY soil flow-meter')
     st.markdown('This site helps you build your own do-it-yourself (DIY) **soil flow-meter** '
                 'with materials around your home, and measure your soil\'s '

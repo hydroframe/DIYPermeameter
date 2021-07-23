@@ -14,7 +14,7 @@ from scipy.optimize import curve_fit
 from utils.myStreamlit import myCaption
 
 
-def classData(cached_sets, cached_results):
+def classData(image_path, cached_sets, cached_results):
     numSamples = len(cached_sets)
     # st.write(cached_sets)
 
@@ -289,7 +289,7 @@ def classData(cached_sets, cached_results):
                         'Let''s see how your samples compare to these ranges:')
 
         with col2:
-            st.image('assets/images/MapConductivity.png')
+            st.image(f'{image_path}/MapConductivity.png')
             myCaption('<b>Figure 1</b>: Map of soil types across USA. Colors represent '
                       'changes in soil water retention (adapted from Gleeson '
                       '<i>et al.</i> Geophysical Research Letters 38(2) 2011.')

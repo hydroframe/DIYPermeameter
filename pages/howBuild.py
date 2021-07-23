@@ -9,9 +9,7 @@ import streamlit as st
 from utils.myStreamlit import myCaption
 
 
-def howBuild():
-    image_path = 'assets/images'
-
+def howBuild(image_path):
     st.title('Build your own DIY soil flow-meter!')
     st.header('Supplies:')
     text, pic1 = st.beta_columns((3, 2))

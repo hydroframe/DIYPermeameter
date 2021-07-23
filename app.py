@@ -96,15 +96,17 @@ st.markdown("""
             
             """, unsafe_allow_html=True)
 
+image_path = 'assets/images'
+
 # Run selected page
 if pageSelect == 'splashpage':
-    splashPage()
+    splashPage(image_path)
 elif pageSelect == 'howBuild':
-    howBuild()
+    howBuild(image_path)
 elif pageSelect == 'dataProcessing':
     dataProcessing(cached_name(), cached_height(), cached_data(), cached_dataSets())
 elif pageSelect == 'classData':
-    classData(cached_dataSets(), cached_results())
+    classData(image_path, cached_dataSets(), cached_results())
 elif pageSelect == 'challenge':
     challenge()
 
