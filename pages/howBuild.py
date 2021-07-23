@@ -73,19 +73,19 @@ def howBuild():
             """)
 
     with pic1:
-        st.image(f'{image_path}/Build1.jpeg', width=size)
+        st.image(f'{image_path}/Build1.JPEG', width=size)
         myCaption('Figure 3: Cut the bottom off the jar')
 
-        st.image(f'{image_path}/Build2.jpeg', width=size)
+        st.image(f'{image_path}/Build2.JPEG', width=size)
         myCaption('Figure 4: Mark heights in centimeters, starting at the cap')
 
-        st.image(f'{image_path}/Build3.jpeg', width=size)
+        st.image(f'{image_path}/Build3.JPEG', width=size)
         myCaption('Figure 5: Break hole in center of screw cap')
 
-        st.image(f'{image_path}/Build4.jpeg', width=size)
+        st.image(f'{image_path}/Build4.JPEG', width=size)
         myCaption('Figure 6: Attach cheesecloth using screw cap')
 
-        st.image(f'{image_path}/Build5.jpeg', width=size)
+        st.image(f'{image_path}/Build5.JPEG', width=size)
         myCaption('Figure 7: Prototype flow-meter ready for testing')
 
     st.header('Experiment:')
