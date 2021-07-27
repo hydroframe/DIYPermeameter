@@ -16,11 +16,7 @@ from utils.myStreamlit import myCaption
 
 def classData(image_path, cached_sets, cached_results):
     numSamples = len(cached_sets)
-    # st.write(cached_sets)
-
     strList = [cached_sets[i]["Sample name"][0] for i in range(numSamples)]
-
-    # st.write(strList)
 
     def linFunc(x, a):
         return a * x
@@ -41,9 +37,6 @@ def classData(image_path, cached_sets, cached_results):
                             'high': [10 ** (-np.array(df_pK['low'][i], dtype=float)) * 1000 * 9.81 / 0.00089 * 60 * 100
                                      for i in range(len(df_pK['low']))]})
 
-    # st.write(df_pK)
-    # st.write(df_cond)
-
     # Site construction
     st.title('Compare soils')
 
@@ -55,7 +48,6 @@ def classData(image_path, cached_sets, cached_results):
     st.header('Upload, download, or remove samples')
 
     # Upload file from csv
-    # st.subheader('Upload from csv:')
     panel_upload = st.beta_expander("Upload from csv", expanded=False)
     with panel_upload:
         left, right = st.beta_columns(2)
@@ -63,7 +55,6 @@ def classData(image_path, cached_sets, cached_results):
             upload_file = st.file_uploader("Choose a file")
             if upload_file is not None:
                 df_upload = pd.read_csv(upload_file)
-                # st.write(df_upload)
         with right:
             if upload_file is not None:
                 sampleName = df_upload['Sample name'][0]  # upload_file.name.split('.')[0]
@@ -84,22 +75,15 @@ def classData(image_path, cached_sets, cached_results):
                     if sampleName in strList:
                         addSample = False
                 if addSample:
-                    # st.write(upload_file.name)
-
-                    # st.write(customSampleName)
-
-                    # st.write(df_upload)
                     df_main = pd.DataFrame({'Water height (cm)': df_upload['Water height (cm)'],
                                             'Time (s)': df_upload['Time (s)']})
                     height = df_upload['Sample height (cm)'][0]
                     st.write(pd.DataFrame({'Sample height (cm)': [height]}))
                     st.write(df_main)
-                    # should_add_sample=st.button('Add sample')
-                    # if should_add_sample:
                     cached_sets.append(df_upload)
                     upload_file = None
-                    # should_add_sample=False
-                    ### Hoang: I think I need some way to automatically rerun here ###
+
+                    # TODO: Add a way to automatically rerun here
 
     # Data Downloading
     numSamples = len(cached_sets)
@@ -148,17 +132,18 @@ def classData(image_path, cached_sets, cached_results):
                 for i in range(len(cached_sets)):
                     cached_sets.pop()  # clear all samples
                 should_clear_samples = False
-                ### Hoang: I think I need some way to automatically rerun here ###
+
+                # TODO: Add a way to automatically rerun here
 
     # Display samples
     numSamples = len(cached_sets)
     strList = [cached_sets[i]["Sample name"][0] for i in range(numSamples)]
 
-    # cached_sets=cached_dataSets
     df_allSamples = pd.DataFrame({"Sample name": cached_sets[i]["Sample name"][0],
                                   "Height (cm)": cached_sets[i]["Sample height (cm)"][0],
                                   "Number of points": len(cached_sets[i]["Time (s)"])}
                                  for i in range(numSamples))
+
     st.header('Compare your samples')
     if not list(df_allSamples):
         st.write('Upload a sample or process the data using the **Process \
@@ -195,10 +180,18 @@ def classData(image_path, cached_sets, cached_results):
 
             # Curve fitting
             [mdl, mdlcov] = curve_fit(linFunc, heightsAv, vels)  # units of s
-            cached_results.append(pd.DataFrame({'Sample name': cached_sets[s]['Sample name'][0],
-                                                'Permeability': mdl * visc * sampleHeight / 100 / rho / g,
-                                                'Retention': -math.log10(mdl * visc / rho / g),
-                                                'Conductivity': mdl * sampleHeight * 60}))
+
+            sample_name = cached_sets[s]['Sample name'][0]
+            permeability = mdl * visc * sampleHeight / 100 / rho / g
+            retention = 0
+            if mdl > 0:
+                retention = -math.log10(mdl * visc / rho / g)
+            conductivity = mdl * sampleHeight * 60
+
+            cached_results.append(pd.DataFrame({'Sample name': sample_name,
+                                                'Permeability': permeability,
+                                                'Retention': retention,
+                                                'Conductivity': conductivity}))
 
             # Plot fit
             linH = np.linspace(0, maxH)
@@ -218,13 +211,14 @@ def classData(image_path, cached_sets, cached_results):
         ax1b.set_xlim([0, 1.1 * maxH])
         ax1b.set_ylim([0, 1.1 * maxV])
 
-        # loosen subplot spacing
+        # Loosen subplot spacing
         plt.subplots_adjust(left=0.1,
                             bottom=0.1,
                             right=0.9,
                             top=0.9,
                             wspace=0.4,
                             hspace=0.4)
+
         st.write(fig)
 
         st.markdown('From these plots, we can measure the hydraulic conductivity '
@@ -243,27 +237,10 @@ def classData(image_path, cached_sets, cached_results):
         listRetention = ["{:.2f}".format(cached_results[i]['Retention'][0]) for i in range(numSamples)]
         listCond = ["{:.2f}".format(cached_results[i]['Conductivity'][0]) for i in range(numSamples)]
 
-        #  Display permability results
-        # leftB,colN,colP,colR,rightB=st.beta_columns((.5,1,1,1,.5))
-        # with colN:
-        #     st.subheader('Sample Name')
-        #     for i in range(len(listNames)):
-        #         st.write(listNames[i]) 
-        # with colP:
-        #     st.subheader('Permeability (m²)')
-        #     for i in range(len(listNames)):
-        #         st.write(listPerm[i]) 
-        # with colR:
-        #     st.subheader('Retention')
-        #     for i in range(len(listNames)):
-        #         st.write(listRetention[i]) 
-
         # Write data to table
         df_perms = pd.DataFrame({'Sample name': listNames,
                                  'Hydraulic conductivity (cm/min)': listCond})
 
-        # 'Permeability (m²)': listPerm,
-        # 'Retention':listRetention})
         _, col, _ = st.beta_columns((.1, 1, .1))
         with col:
             st.write(df_perms)
@@ -304,7 +281,6 @@ def classData(image_path, cached_sets, cached_results):
                      s=df_cond['name'][i],
                      fontsize=12, horizontalalignment='center',
                      verticalalignment='bottom')
-        # plt.gca().set_prop_cycle(colors[numSamples-1:numReal-1])
 
         for i in range(numSamples):
             ax2.scatter(x=cached_results[i]['Conductivity'][0], y=-1 - numReal - (i + 1))
@@ -318,10 +294,6 @@ def classData(image_path, cached_sets, cached_results):
         ax2.set_ylim([-len(df_cond['low']) - numSamples - 1.5, 0])
         ax2.set_xlabel('Hydraulic conductivity (cm/min)', fontsize=12)
         ax2.set_xscale('log')
-        # ax2.xaxis.set_minor_formatter(mticker.ScalarFormatter())
-        # ax2.xaxis.set_major_formatter(mticker.ScalarFormatter())
-        # plt.xticks(np.linspace(0,20,5),np.linspace(0,20,5))
-        # ax2.set_ylabel('Samples', fontsize=12)
 
         st.write(fig2)
         st.markdown('You may notice that your samples tend to be higher '
