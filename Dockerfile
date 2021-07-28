@@ -11,4 +11,4 @@ COPY . .
 
 ENTRYPOINT ["/bin/bash", "-c"]
 
-CMD ["streamlit run app.py --server.port 8082"]
+CMD ["streamlit run app.py --server.port 8082 --browser.serverAddress diypermeameter.hydroframe.org"]
