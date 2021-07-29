@@ -48,11 +48,11 @@ def classData(image_path, cached_sets, cached_results):
     st.header('Upload, download, or remove samples')
 
     # Upload file from csv
-    panel_upload = st.beta_expander("Upload from csv", expanded=False)
+    panel_upload = st.beta_expander('Upload from csv', expanded=False)
     with panel_upload:
         left, right = st.beta_columns(2)
         with left:
-            upload_file = st.file_uploader("Choose a file")
+            upload_file = st.file_uploader('Choose a file')
             if upload_file is not None:
                 df_upload = pd.read_csv(upload_file)
         with right:
@@ -127,7 +127,7 @@ def classData(image_path, cached_sets, cached_results):
             #         if cache_record[i]["sample name"][0] is not removePoint:
             #             cached_sets.append(cache_record[i]) # re-add everything from old cache to new cache except point marked for removal
             #     should_remove_sample=False
-            should_clear_samples = st.button("Clear all samples")
+            should_clear_samples = st.button('Clear all samples')
             if should_clear_samples:
                 for i in range(len(cached_sets)):
                     cached_sets.pop()  # clear all samples
@@ -163,7 +163,7 @@ def classData(image_path, cached_sets, cached_results):
         for s in range(numSamples):
             heights = cached_sets[s]['Water height (cm)']
             times = cached_sets[s]['Time (s)']
-            sampleHeight = cached_sets[i]["Sample height (cm)"][0]
+            sampleHeight = cached_sets[i]['Sample height (cm)'][0]
             vels = [-(h2 - h1) / (t2 - t1) for h1, h2, t1, t2 in
                     zip(heights[0:-1], heights[1::], times[0:-1], times[1::])]
             heightsAv = [(h1 + h2) / 2 / sampleHeight for h1, h2 in zip(heights[1::], heights[0:-1])]
@@ -233,9 +233,9 @@ def classData(image_path, cached_sets, cached_results):
                     'conductivity by measuring this slope:')
 
         listNames = [cached_results[i]['Sample name'][0] for i in range(numSamples)]
-        listPerm = ["{:.2e}".format(cached_results[i]['Permeability'][0]) for i in range(numSamples)]
-        listRetention = ["{:.2f}".format(cached_results[i]['Retention'][0]) for i in range(numSamples)]
-        listCond = ["{:.2f}".format(cached_results[i]['Conductivity'][0]) for i in range(numSamples)]
+        listPerm = ['{:.2e}'.format(cached_results[i]['Permeability'][0]) for i in range(numSamples)]
+        listRetention = ['{:.2f}'.format(cached_results[i]['Retention'][0]) for i in range(numSamples)]
+        listCond = ['{:.2f}'.format(cached_results[i]['Conductivity'][0]) for i in range(numSamples)]
 
         # Write data to table
         df_perms = pd.DataFrame({'Sample name': listNames,

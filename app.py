@@ -52,7 +52,7 @@ PageDictionary = {
 
 # Select Page and convert displayed name to my code key for page using PageDictionary
 pageSelect = PageDictionary[
-    st.sidebar.radio("Pick a page",
+    st.sidebar.radio('Pick a page',
                      ('What is soil hydraulic conductivity?',
                       'Build your own DIY soil flow-meter',
                       'Process experiment data',

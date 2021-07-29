@@ -25,11 +25,11 @@ def dataProcessing(cached_name, cached_height, cached_data, cached_dataSets):
     if len(cached_name) == 0:
         if len(sampleName) == 0:
             sampleName = 'Sample 01'
-            cached_name.append({"Sample name": sampleName})
+            cached_name.append({'Sample name': sampleName})
     else:
         if len(sampleName) > 0:
             cached_name.pop()
-            cached_name.append({"Sample name": sampleName})
+            cached_name.append({'Sample name': sampleName})
     st.write('Current sample: **' + cached_name[0].get('Sample name') + '**')
 
     sampleHeightText = st.text_input('Enter height of your soil sample')
@@ -51,7 +51,7 @@ def dataProcessing(cached_name, cached_height, cached_data, cached_dataSets):
 
     left, mid, right = st.beta_columns(3)
     with left:
-        if st.button("Add row"):
+        if st.button('Add row'):
             if len(newDataFloat) == 2:
                 cached_data.append({'Water height (cm)': newDataFloat[0],
                                     'Time (s)': newDataFloat[1]})
@@ -143,7 +143,7 @@ def dataProcessing(cached_name, cached_height, cached_data, cached_dataSets):
                      + '{:.2f} cm/min'.format(MyConductivity[0]))
 
         # Sample saving
-        if st.button("Save this sample data set"):
+        if st.button('Save this sample data set'):
             sampleNameList = ['' for i in range(len(df_cache))]
             sampleNameList[0] = cached_name[0]['Sample name']
             cached_heightList = ['' for i in range(len(df_cache))]
