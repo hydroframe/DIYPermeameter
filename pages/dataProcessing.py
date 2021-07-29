@@ -30,13 +30,13 @@ def dataProcessing(cached_name, cached_height, cached_data, cached_dataSets):
         if len(sampleName) > 0:
             cached_name.pop()
             cached_name.append({"Sample name": sampleName})
-    st.write("Current sample: **" + cached_name[0].get("Sample name") + "**")
+    st.write('Current sample: **' + cached_name[0].get('Sample name') + '**')
 
-    sampleHeightText = st.text_input("Enter height of your soil sample")
+    sampleHeightText = st.text_input('Enter height of your soil sample')
     if len(sampleHeightText) > 0:
         if len(cached_height) > 0:
             cached_height.pop()
-        cached_height.append({"Soil sample height (cm)": float(sampleHeightText)})
+        cached_height.append({'Soil sample height (cm)': float(sampleHeightText)})
     if len(cached_height) > 0:
         st.write(pd.DataFrame(cached_height))
 
@@ -58,11 +58,11 @@ def dataProcessing(cached_name, cached_height, cached_data, cached_dataSets):
             else:
                 st.write('You need to add exactly 2 numbers at a time: water height and time')
     with mid:
-        if st.button("Remove last row"):
+        if st.button('Remove last row'):
             if len(cached_data) > 0:
                 cached_data.pop()
     with right:
-        if st.button("Clear all"):
+        if st.button('Clear all'):
             if len(cached_data) > 0:
                 for i in range(len(cached_data)):
                     cached_data.pop()
@@ -139,8 +139,8 @@ def dataProcessing(cached_name, cached_height, cached_data, cached_dataSets):
                     'hydraulic conductivity $K$. '
                     '*Can you explain now how the hydraulic conductivity is related '
                     'to the speed that water drains, but is not exactly the same?*')
-        st.subheader('Your sample "' + cached_name[0][
-            'Sample name'] + '" has a hydraulic conductivity of ' + '{:.2f} cm/min'.format(MyConductivity[0]))
+        st.subheader('Your sample "' + cached_name[0]['Sample name'] + '" has a hydraulic conductivity of '
+                     + '{:.2f} cm/min'.format(MyConductivity[0]))
 
         # Sample saving
         if st.button("Save this sample data set"):

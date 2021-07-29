@@ -16,7 +16,7 @@ from utils.myStreamlit import myCaption
 
 def classData(image_path, cached_sets, cached_results):
     numSamples = len(cached_sets)
-    strList = [cached_sets[i]["Sample name"][0] for i in range(numSamples)]
+    strList = [cached_sets[i]['Sample name'][0] for i in range(numSamples)]
 
     def linFunc(x, a):
         return a * x
@@ -87,26 +87,26 @@ def classData(image_path, cached_sets, cached_results):
 
     # Data Downloading
     numSamples = len(cached_sets)
-    strList = [cached_sets[i]["Sample name"][0] for i in range(numSamples)]
-    panel_download = st.beta_expander("Download to csv", expanded=False)
+    strList = [cached_sets[i]['Sample name'][0] for i in range(numSamples)]
+    panel_download = st.beta_expander('Download to csv', expanded=False)
     with panel_download:
         left, right = st.beta_columns(2)
         with left:
             st.subheader('Download to csv:')
         with right:
             for i in range(numSamples):
-                desiredFileName = cached_sets[i]["Sample name"][0] + '.csv'
+                desiredFileName = cached_sets[i]['Sample name'][0] + '.csv'
                 df_export = cached_sets[i]
                 csv = df_export.to_csv(index=False)
                 b64 = base64.b64encode(csv.encode()).decode()  # some strings <-> bytes conversions necessary here
                 href = f'<a href="data:file/csv;base64,{b64}" download ="{desiredFileName}">' + \
-                       cached_sets[i]["Sample name"][0] + ': Download as a .csv file</a>'
+                       cached_sets[i]['Sample name'][0] + ': Download as a .csv file</a>'
                 st.markdown(href, unsafe_allow_html=True)
 
     # Remove samples
     numSamples = len(cached_sets)
-    strList = [cached_sets[i]["Sample name"][0] for i in range(numSamples)]
-    panel_remove = st.beta_expander("Remove samples", expanded=False)
+    strList = [cached_sets[i]['Sample name'][0] for i in range(numSamples)]
+    panel_remove = st.beta_expander('Remove samples', expanded=False)
     with panel_remove:
         left, mid, right = st.beta_columns(3)
         with left:
@@ -137,11 +137,11 @@ def classData(image_path, cached_sets, cached_results):
 
     # Display samples
     numSamples = len(cached_sets)
-    strList = [cached_sets[i]["Sample name"][0] for i in range(numSamples)]
+    strList = [cached_sets[i]['Sample name'][0] for i in range(numSamples)]
 
-    df_allSamples = pd.DataFrame({"Sample name": cached_sets[i]["Sample name"][0],
-                                  "Height (cm)": cached_sets[i]["Sample height (cm)"][0],
-                                  "Number of points": len(cached_sets[i]["Time (s)"])}
+    df_allSamples = pd.DataFrame({'Sample name': cached_sets[i]['Sample name'][0],
+                                  'Height (cm)': cached_sets[i]['Sample height (cm)'][0],
+                                  'Number of points': len(cached_sets[i]['Time (s)'])}
                                  for i in range(numSamples))
 
     st.header('Compare your samples')
