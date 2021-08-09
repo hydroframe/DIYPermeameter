@@ -22,7 +22,7 @@ streamlit run app.py
 # Pull the image
 docker pull hydroframe/diypermeameter:latest
 
-# Launch the image on port 8000
+# Launch the image on port 80
 # Dockerfile must be edited to use a different port
-docker run -p 8000:8000 hydroframe/diypermeameter:latest
+docker run -p 80:80 hydroframe/diypermeameter:latest
 ```
