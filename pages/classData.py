@@ -12,15 +12,26 @@ import base64
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 from utils.myStreamlit import myCaption
+from utils.Sample import Sample
 
 
-def classData(image_path, cached_sets, cached_results):
-    numSamples = len(cached_sets)
-    strList = [cached_sets[i]['Sample name'][0] for i in range(numSamples)]
+def remove_sample(sample_name=''):
+    if sample_name:
+        st.session_state.samples.pop(sample_name, 'None')
+        st.session_state.results.pop(sample_name, 'None')
+    else:
+        st.session_state.samples.clear()
+        st.session_state.results.clear()
 
-    def linFunc(x, a):
-        return a * x
+    if st.session_state.current_sample_name == sample_name or sample_name == '':
+        st.session_state.current_sample_name = 'Sample 01'
+        st.session_state.current_sample_height = 0.0
+        st.session_state.data_points.clear()
 
+    st.session_state.key_number += 1
+
+
+def classData(image_path):
     # Physical Parameters
     visc = 0.00089  # Pa*s
     rho = 1000  # kg/m^3
@@ -31,6 +42,7 @@ def classData(image_path, cached_sets, cached_results):
     df_pK = pd.DataFrame({'name': ['Gravel', 'Clean sand', 'Silty sand', 'Silt'],
                           'low': [7, 9, 10, 12],
                           'high': [10, 13, 14, 16]})
+
     df_cond = pd.DataFrame({'name': ['Gravel', 'Clean sand', 'Silty sand', 'Silt'],
                             'low': [10 ** (-np.array(df_pK['high'][i], dtype=float)) * 1000 * 9.81 / 0.00089 * 60 * 100
                                     for i in range(len(df_pK['high']))],
@@ -39,113 +51,100 @@ def classData(image_path, cached_sets, cached_results):
 
     # Site construction
     st.title('Compare soils')
-
     st.write('Use this page to compare multiple soil samples you collected '
              'on the previous page, download sample data, or upload '
              'previous soil samples. You can also use this to collect data '
              'across your classroom.')
-
     st.header('Upload, download, or remove samples')
 
     # Upload file from csv
-    panel_upload = st.beta_expander('Upload from csv', expanded=False)
+    panel_upload = st.expander('Upload from csv', expanded=False)
     with panel_upload:
-        left, right = st.beta_columns(2)
+        left, right = st.columns(2)
+
         with left:
-            upload_file = st.file_uploader('Choose a file')
+            upload_file = st.file_uploader('Choose a file', key=f'{st.session_state.key_number}')
+
             if upload_file is not None:
+                upload_file.seek(0)
                 df_upload = pd.read_csv(upload_file)
+
         with right:
             if upload_file is not None:
-                sampleName = df_upload['Sample name'][0]  # upload_file.name.split('.')[0]
-                addSample = True
-                if strList:
-                    if sampleName in strList:
-                        addSample = False
-                if not addSample:
-                    customSampleName = st.text_input('You already have a soil with the same name. Give \
-                             this one a different name if you would like to \
-                             still add it.')
-                    if len(customSampleName) > 0:
-                        sampleName = customSampleName
-                        df_upload['Sample name'][0] = customSampleName
-                        st.write('New name:**' + customSampleName + '**')
-                        addSample = True
-                if strList:
-                    if sampleName in strList:
-                        addSample = False
-                if addSample:
+                sample_name = df_upload['Sample name'][0]
+
+                # If sample doesn't already exist and data is correct size
+                if sample_name not in st.session_state.samples and len(df_upload['Water height (cm)']) == \
+                        len(df_upload['Time (s)']) and len(df_upload['Water height (cm)']) >= 2:
                     df_main = pd.DataFrame({'Water height (cm)': df_upload['Water height (cm)'],
                                             'Time (s)': df_upload['Time (s)']})
                     height = df_upload['Sample height (cm)'][0]
+
+                    # Display sample height and water height vs time
                     st.write(pd.DataFrame({'Sample height (cm)': [height]}))
                     st.write(df_main)
-                    cached_sets.append(df_upload)
-                    upload_file = None
 
-                    # TODO: Add a way to automatically rerun here
+                    # Create sample from data and add to dict of samples
+                    new_sample = Sample(sample_height=df_upload['Sample height (cm)'][0],
+                                        data_points=df_main)
+                    st.session_state.samples[sample_name] = new_sample
 
     # Data Downloading
-    numSamples = len(cached_sets)
-    strList = [cached_sets[i]['Sample name'][0] for i in range(numSamples)]
-    panel_download = st.beta_expander('Download to csv', expanded=False)
+    panel_download = st.expander('Download to csv', expanded=False)
     with panel_download:
-        left, right = st.beta_columns(2)
+        left, right = st.columns(2)
         with left:
             st.subheader('Download to csv:')
         with right:
-            for i in range(numSamples):
-                desiredFileName = cached_sets[i]['Sample name'][0] + '.csv'
-                df_export = cached_sets[i]
+            for sample_name, sample in st.session_state.samples.items():
+                num_rows = len(sample.data_points)
+
+                # Pad lists to number of of data points
+                sample_name_list = ['' for i in range(num_rows)]
+                sample_name_list[0] = sample_name
+
+                # Pad lists to number of of data points
+                sample_height_list = ['' for i in range(num_rows)]
+                sample_height_list[0] = sample.sample_height
+
+                df_export = pd.DataFrame({'Sample name': sample_name_list, 'Sample height (cm)': sample_height_list,
+                                          'Water height (cm)': sample.data_points['Water height (cm)'],
+                                          'Time (s)': sample.data_points['Time (s)']})
+
+                # Generate csv file
                 csv = df_export.to_csv(index=False)
                 b64 = base64.b64encode(csv.encode()).decode()  # some strings <-> bytes conversions necessary here
-                href = f'<a href="data:file/csv;base64,{b64}" download ="{desiredFileName}">' + \
-                       cached_sets[i]['Sample name'][0] + ': Download as a .csv file</a>'
+                desired_filename = sample_name + '.csv'
+
+                # Generate link to download csv
+                href = f'<a href="data:file/csv;base64,{b64}" download ="{desired_filename}">' + \
+                       sample_name + ': Download as a .csv file</a>'
+
+                # Write out link
                 st.markdown(href, unsafe_allow_html=True)
 
     # Remove samples
-    numSamples = len(cached_sets)
-    strList = [cached_sets[i]['Sample name'][0] for i in range(numSamples)]
-    panel_remove = st.beta_expander('Remove samples', expanded=False)
+    panel_remove = st.expander('Remove samples', expanded=False)
     with panel_remove:
-        left, mid, right = st.beta_columns(3)
+        left, mid, right = st.columns(3)
         with left:
             st.subheader('Remove samples:')
         with mid:
             st.write(' ')
-            # removePoint=st.selectbox("Data point to remove", strList, key=0)
+            st.write(' ')
+
+            for sample_name, sample in st.session_state.samples.items():
+                remove_sample_button = st.button(f'Remove {sample_name}', on_click=remove_sample,
+                                                 kwargs={'sample_name': sample_name})
         with right:
             st.write(' ')
             st.write(' ')
-            # should_remove_sample=st.button("Remove this sample")
-            # if should_remove_sample:
-            #     cache_record=cached_sets #record old cache
-            #     for i in range(len(cached_sets)):
-            #         cached_sets.pop() # clear old cache
-            #     for i in range(len(cache_record)):
-            #         st.write(cache_record[i]["sample name"][0])
-            #         if cache_record[i]["sample name"][0] is not removePoint:
-            #             cached_sets.append(cache_record[i]) # re-add everything from old cache to new cache except point marked for removal
-            #     should_remove_sample=False
-            should_clear_samples = st.button('Clear all samples')
-            if should_clear_samples:
-                for i in range(len(cached_sets)):
-                    cached_sets.pop()  # clear all samples
-                should_clear_samples = False
 
-                # TODO: Add a way to automatically rerun here
+            should_clear_samples = st.button('Clear all samples', on_click=remove_sample)
 
-    # Display samples
-    numSamples = len(cached_sets)
-    strList = [cached_sets[i]['Sample name'][0] for i in range(numSamples)]
-
-    df_allSamples = pd.DataFrame({'Sample name': cached_sets[i]['Sample name'][0],
-                                  'Height (cm)': cached_sets[i]['Sample height (cm)'][0],
-                                  'Number of points': len(cached_sets[i]['Time (s)'])}
-                                 for i in range(numSamples))
-
+    # Display all samples
     st.header('Compare your samples')
-    if not list(df_allSamples):
+    if not st.session_state.samples:
         st.write('Upload a sample or process the data using the **Process \
                  experiment data** tab')
     else:
@@ -153,45 +152,43 @@ def classData(image_path, cached_sets, cached_results):
         # Initialize figure
         maxH = 0
         maxV = 0
-        for s in range(len(cached_results)):
-            cached_results.pop()  # Clear results cache and re-fill in every time on this page
 
         # Process, Save, and Plot data
         fig, (ax1a, ax1b) = plt.subplots(nrows=1, ncols=2, figsize=(8, 3))
         colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
 
-        for s in range(numSamples):
-            heights = cached_sets[s]['Water height (cm)']
-            times = cached_sets[s]['Time (s)']
-            sampleHeight = cached_sets[i]['Sample height (cm)'][0]
-            vels = [-(h2 - h1) / (t2 - t1) for h1, h2, t1, t2 in
-                    zip(heights[0:-1], heights[1::], times[0:-1], times[1::])]
-            heightsAv = [(h1 + h2) / 2 / sampleHeight for h1, h2 in zip(heights[1::], heights[0:-1])]
+        for sample_name, sample in st.session_state.samples.items():
+            heights = sample.data_points['Water height (cm)']
+            times = sample.data_points['Time (s)']
 
-            maxH = max([maxH, max(heightsAv)])
-            maxV = max([maxV, max(vels)])
+            velocity = [-(h2 - h1) / (t2 - t1) for h1, h2, t1, t2 in
+                        zip(heights[0:-1], heights[1::], times[0:-1], times[1::])]
+            heights_average = [(h1 + h2) / 2 / sample.sample_height for h1, h2 in zip(heights[1::], heights[0:-1])]
+
+            maxH = max([maxH, max(heights_average)])
+            maxV = max([maxV, max(velocity)])
 
             ax1a.scatter(x=heights,
                          y=times,
-                         marker='o', label=cached_sets[s]['Sample name'][0])
-            ax1b.scatter(x=heightsAv,
-                         y=vels,
-                         marker='o', label=cached_sets[s]['Sample name'][0])
+                         marker='o', label=sample_name)
+            ax1b.scatter(x=heights_average,
+                         y=velocity,
+                         marker='o', label=sample_name)
 
             # Curve fitting
-            [mdl, mdlcov] = curve_fit(linFunc, heightsAv, vels)  # units of s
+            linFunc = lambda x, a: a * x
+            [mdl, mdlcov] = curve_fit(linFunc, heights_average, velocity)  # units of s
 
-            sample_name = cached_sets[s]['Sample name'][0]
-            permeability = mdl * visc * sampleHeight / 100 / rho / g
+            permeability = mdl * visc * sample.sample_height / 100 / rho / g
             retention = 0
             if mdl > 0:
                 retention = -math.log10(mdl * visc / rho / g)
-            conductivity = mdl * sampleHeight * 60
+            conductivity = mdl * sample.sample_height * 60
 
-            cached_results.append(pd.DataFrame({'Sample name': sample_name,
-                                                'Permeability': permeability,
-                                                'Retention': retention,
-                                                'Conductivity': conductivity}))
+            # TODO - Results could be a part of the sample class
+            st.session_state.results[sample_name] = pd.DataFrame({'Permeability': permeability,
+                                                                  'Retention': retention,
+                                                                  'Conductivity': conductivity})
 
             # Plot fit
             linH = np.linspace(0, maxH)
@@ -200,13 +197,12 @@ def classData(image_path, cached_sets, cached_results):
         # Format axes
         ax1a.set_xlabel('Water Height (cm)', fontsize=12)
         ax1a.set_ylabel('Time (s)', fontsize=12)
-        ax1a.legend([cached_sets[i]['Sample name'][0]
-                     for i in range(numSamples)],
+        ax1a.legend([sample_name for sample_name in st.session_state.samples],
                     fontsize=12)
+
         ax1b.set_xlabel('Water Height / Soil height', fontsize=12)
         ax1b.set_ylabel('Water speed (cm/s)', fontsize=12)
-        ax1b.legend([cached_sets[i]['Sample name'][0]
-                     for i in range(numSamples)],
+        ax1b.legend([sample_name for sample_name in st.session_state.samples],
                     fontsize=12)
         ax1b.set_xlim([0, 1.1 * maxH])
         ax1b.set_ylim([0, 1.1 * maxV])
@@ -232,22 +228,19 @@ def classData(image_path, cached_sets, cached_results):
                     'drain water at higher speeds. We can quantify the '
                     'conductivity by measuring this slope:')
 
-        listNames = [cached_results[i]['Sample name'][0] for i in range(numSamples)]
-        listPerm = ['{:.2e}'.format(cached_results[i]['Permeability'][0]) for i in range(numSamples)]
-        listRetention = ['{:.2f}'.format(cached_results[i]['Retention'][0]) for i in range(numSamples)]
-        listCond = ['{:.2f}'.format(cached_results[i]['Conductivity'][0]) for i in range(numSamples)]
-
         # Write data to table
-        df_perms = pd.DataFrame({'Sample name': listNames,
-                                 'Hydraulic conductivity (cm/min)': listCond})
+        sample_conductivity = ['{:.2f}'.format(result['Conductivity'][0]) for result in
+                               st.session_state.results.values()]
+        df_perms = pd.DataFrame({'Sample name': st.session_state.results.keys(),
+                                 'Hydraulic conductivity (cm/min)': sample_conductivity})
 
-        _, col, _ = st.beta_columns((.1, 1, .1))
+        _, col, _ = st.columns((.1, 1, .1))
         with col:
             st.write(df_perms)
 
         # Compare to real soil distributions
         st.header('Compare with real soils')
-        col1, col2 = st.beta_columns((1, 1))
+        col1, col2 = st.columns((1, 1))
         with col1:
             st.markdown('A typical soil or gravel (Figure 1) can '
                         'have a conductivity as high as 10,000 cm/s, or as low as  '
@@ -271,27 +264,27 @@ def classData(image_path, cached_sets, cached_results):
                       'changes in soil water retention (adapted from Gleeson '
                       '<i>et al.</i> Geophysical Research Letters 38(2) 2011.')
 
-        numReal = len(df_cond['low'])
         fig2, ax2 = plt.subplots(nrows=1, ncols=1,
-                                 figsize=(8, len(df_cond['low']) * .5 + numSamples * .5))
+                                 figsize=(8, len(df_cond['low']) * .5 + len(st.session_state.samples) * .5))
 
-        for i in range(numReal):
+        num_real = len(df_cond['low'])
+        for i in range(num_real):
             ax2.plot([df_cond['low'][i], df_cond['high'][i]], [-1 - i, -1 - i], '-', linewidth=4)
             plt.text(x=10 ** ((math.log10(df_cond['low'][i]) + math.log10(df_cond['high'][i])) / 2), y=-1 - i,
                      s=df_cond['name'][i],
                      fontsize=12, horizontalalignment='center',
                      verticalalignment='bottom')
 
-        for i in range(numSamples):
-            ax2.scatter(x=cached_results[i]['Conductivity'][0], y=-1 - numReal - (i + 1))
-            plt.text(x=cached_results[i]['Conductivity'][0], y=-1 - numReal - (i + 1),
-                     s='  ' + listNames[i],
+        for sample_name, result in st.session_state.results.items():
+            ax2.scatter(x=result['Conductivity'][0], y=-1 - num_real - (i + 1))
+            plt.text(x=result['Conductivity'][0], y=-1 - num_real - (i + 1),
+                     s='  ' + sample_name,
                      fontsize=12, horizontalalignment='left',
                      verticalalignment='center')
 
         plt.ylabel('')
         plt.yticks([], [])
-        ax2.set_ylim([-len(df_cond['low']) - numSamples - 1.5, 0])
+        ax2.set_ylim([-len(df_cond['low']) - len(st.session_state.samples) - 1.5, 0])
         ax2.set_xlabel('Hydraulic conductivity (cm/min)', fontsize=12)
         ax2.set_xscale('log')
 
