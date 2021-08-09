@@ -18,7 +18,7 @@ def splashPage(image_path):
                 'and attempt the **designer soil challenge**!')
 
     st.header('Why hydraulic conductivity matters:')
-    col1, col2 = st.beta_columns((1, 1))
+    col1, col2 = st.columns((1, 1))
     with col1:
         st.markdown('Motion of water in the environment '
                     'is super important for the health of plants, ecosystems, '
@@ -64,7 +64,7 @@ def splashPage(image_path):
                   '<i>et al.</i> Geophysical Research Letters 38(2) 2011.')
 
     st.header('How hydraulic conductivity is measured')
-    col1, col2 = st.beta_columns((1, 1))
+    col1, col2 = st.columns((1, 1))
     with col1:
         st.markdown('To better understand what regions need '
                     'special attention to maintain water health, scientists '
@@ -117,7 +117,7 @@ def splashPage(image_path):
                   'water flows through a soil sample.')
 
     st.header('Build your own DIY soil flow-meter!')
-    col1, col2 = st.beta_columns((1, 1))
+    col1, col2 = st.columns((1, 1))
     with col1:
         st.write('Our goal is to build a simple DIY experimental setup '
                  'to measure how quickly water moves through different soils (Figure 6). '

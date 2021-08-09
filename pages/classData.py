@@ -21,6 +21,7 @@ def remove_sample(sample_name=''):
         st.session_state.results.pop(sample_name, 'None')
     else:
         st.session_state.samples.clear()
+        st.session_state.results.clear()
 
     if st.session_state.current_sample_name == sample_name or sample_name == '':
         st.session_state.current_sample_name = 'Sample 01'
@@ -57,9 +58,9 @@ def classData(image_path):
     st.header('Upload, download, or remove samples')
 
     # Upload file from csv
-    panel_upload = st.beta_expander('Upload from csv', expanded=False)
+    panel_upload = st.expander('Upload from csv', expanded=False)
     with panel_upload:
-        left, right = st.beta_columns(2)
+        left, right = st.columns(2)
 
         with left:
             upload_file = st.file_uploader('Choose a file', key=f'{st.session_state.key_number}')
@@ -89,9 +90,9 @@ def classData(image_path):
                     st.session_state.samples[sample_name] = new_sample
 
     # Data Downloading
-    panel_download = st.beta_expander('Download to csv', expanded=False)
+    panel_download = st.expander('Download to csv', expanded=False)
     with panel_download:
-        left, right = st.beta_columns(2)
+        left, right = st.columns(2)
         with left:
             st.subheader('Download to csv:')
         with right:
@@ -123,9 +124,9 @@ def classData(image_path):
                 st.markdown(href, unsafe_allow_html=True)
 
     # Remove samples
-    panel_remove = st.beta_expander('Remove samples', expanded=False)
+    panel_remove = st.expander('Remove samples', expanded=False)
     with panel_remove:
-        left, mid, right = st.beta_columns(3)
+        left, mid, right = st.columns(3)
         with left:
             st.subheader('Remove samples:')
         with mid:
@@ -233,13 +234,13 @@ def classData(image_path):
         df_perms = pd.DataFrame({'Sample name': st.session_state.results.keys(),
                                  'Hydraulic conductivity (cm/min)': sample_conductivity})
 
-        _, col, _ = st.beta_columns((.1, 1, .1))
+        _, col, _ = st.columns((.1, 1, .1))
         with col:
             st.write(df_perms)
 
         # Compare to real soil distributions
         st.header('Compare with real soils')
-        col1, col2 = st.beta_columns((1, 1))
+        col1, col2 = st.columns((1, 1))
         with col1:
             st.markdown('A typical soil or gravel (Figure 1) can '
                         'have a conductivity as high as 10,000 cm/s, or as low as  '

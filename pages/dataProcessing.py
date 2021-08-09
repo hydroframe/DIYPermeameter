@@ -47,7 +47,7 @@ def dataProcessing():
             st.error('Please enter numeric data in the format: #,#')
             st.session_state.current_data_point = []
 
-    left, mid, right = st.beta_columns(3)
+    left, mid, right = st.columns(3)
     with left:
         if st.button('Add row'):
             add_row = True

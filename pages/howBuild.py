@@ -12,7 +12,7 @@ from utils.myStreamlit import myCaption
 def howBuild(image_path):
     st.title('Build your own DIY soil flow-meter!')
     st.header('Supplies:')
-    text, pic1 = st.beta_columns((3, 2))
+    text, pic1 = st.columns((3, 2))
     size = 200
 
     with text:
@@ -38,7 +38,7 @@ def howBuild(image_path):
         myCaption('Figure 2: For example, this plastic peanut butter jar works well.')
 
     st.header('Building your flow-meter:')
-    text, pic1 = st.beta_columns((1, 1))
+    text, pic1 = st.columns((1, 1))
     size = 200
     with text:
         st.markdown("""
@@ -87,7 +87,7 @@ def howBuild(image_path):
         myCaption('Figure 7: Prototype flow-meter ready for testing')
 
     st.header('Experiment:')
-    text, vid = st.beta_columns((1.8, 1))
+    text, vid = st.columns((1.8, 1))
     with text:
         st.markdown("""
             1. **Sample selection:** Fill your flow-meter with a little \
