@@ -1,6 +1,7 @@
 FROM python:3.8-slim-buster
 
 EXPOSE 8082
+EXPOSE 80
 
 WORKDIR /DIYPermeameter
 
@@ -11,4 +12,4 @@ COPY . .
 
 ENTRYPOINT ["/bin/bash", "-c"]
 
-CMD ["streamlit run app.py --server.port 8082 --browser.serverAddress diypermeameter.hydroframe.org"]
+CMD ["streamlit run app.py --browser.serverAddress diypermeameter.hydroframe.org --server.port 80"]
