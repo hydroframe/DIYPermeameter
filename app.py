@@ -12,32 +12,28 @@ from pages.howBuild import howBuild
 
 
 ##############################################################################
-# DEFINE CACHES
+# DEFINE SESSION STATE
 
-@st.cache(allow_output_mutation=True)
-def cached_data():
-    return []
+if 'current_sample_name' not in st.session_state:
+    st.session_state.current_sample_name = 'Sample 01'
 
+if 'current_sample_height' not in st.session_state:
+    st.session_state.current_sample_height = 0.0
 
-@st.cache(allow_output_mutation=True)
-def cached_height():
-    return []
+if 'current_data_point' not in st.session_state:
+    st.session_state.current_data_point = []
 
+if 'data_points' not in st.session_state:
+    st.session_state.data_points = []
 
-@st.cache(allow_output_mutation=True)
-def cached_name():
-    return []
+if 'samples' not in st.session_state:
+    st.session_state.samples = {}
 
+if 'results' not in st.session_state:
+    st.session_state.results = {}
 
-@st.cache(allow_output_mutation=True)
-def cached_dataSets():
-    return []
-
-
-@st.cache(allow_output_mutation=True)
-def cached_results():
-    return []
-
+if 'key_number' not in st.session_state:
+    st.session_state.key_number = 0
 
 ##############################################################################
 # APP LEVEL CODE
@@ -82,12 +78,6 @@ if pageSelect == 'splashpage':
 elif pageSelect == 'howBuild':
     howBuild(image_path)
 elif pageSelect == 'dataProcessing':
-    dataProcessing(cached_name(), cached_height(), cached_data(), cached_dataSets())
+    dataProcessing()
 elif pageSelect == 'classData':
-    classData(image_path, cached_dataSets(), cached_results())
-
-
-# Streamlit widgets automatically run the script from top to bottom. Since
-# this button is not connected to any other logic, it just causes a plain
-# rerun.
-# st.button("Re-run")
+    classData(image_path)

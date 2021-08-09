@@ -9,71 +9,89 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
+from utils.Sample import Sample
 
 
-def dataProcessing(cached_name, cached_height, cached_data, cached_dataSets):
-    def linFunc(x, a):
-        return a * x
-
+def dataProcessing():
     st.title('Let\'s process the data from your experiment!')
     st.write('Use this online tool to enter data from your experiment. '
              'It will compute the **permeability** of your soil sample. '
              'Once you are happy with your data, you can save this and '
              'add it to your soil collection on the next page!')
 
-    sampleName = st.text_input('Give your soil sample a name.')
-    if len(cached_name) == 0:
-        if len(sampleName) == 0:
-            sampleName = 'Sample 01'
-            cached_name.append({'Sample name': sampleName})
-    else:
-        if len(sampleName) > 0:
-            cached_name.pop()
-            cached_name.append({'Sample name': sampleName})
-    st.write('Current sample: **' + cached_name[0].get('Sample name') + '**')
+    # Obtain sample name
+    sample_name = st.text_input(label='Give your soil sample a name.', key='current_sample_name',
+                                value=st.session_state.current_sample_name)
+    st.write('Current sample: **' + st.session_state.current_sample_name + '**')
 
-    sampleHeightText = st.text_input('Enter height of your soil sample')
-    if len(sampleHeightText) > 0:
-        if len(cached_height) > 0:
-            cached_height.pop()
-        cached_height.append({'Soil sample height (cm)': float(sampleHeightText)})
-    if len(cached_height) > 0:
-        st.write(pd.DataFrame(cached_height))
+    # Obtain sample height height
+    sample_height = st.number_input(label='Enter height of your soil sample', key='current_sample_height',
+                                    value=st.session_state.current_sample_height)
+    if sample_height > 0:
+        st.write(pd.DataFrame([{'Soil sample height (cm)': st.session_state.current_sample_height}]))
 
-    newDataText = st.text_input('Enter a new data point in format #,#.'
-                                'The first number should be a water height '
-                                'in centimeters, '
-                                'and the second number should be the time '
-                                'in seconds.')
+    # Sample data points
+    data_point_text = st.text_input(label='Enter a new data point in format #,#.'
+                                          'The first number should be a water height '
+                                          'in centimeters, '
+                                          'and the second number should be the time '
+                                          'in seconds.', )
 
-    newDataTextSplit = newDataText.replace(',', ' ').split()
-    newDataFloat = [float(item) for item in newDataTextSplit]
+    if len(data_point_text) > 0:
+        individual_points = data_point_text.split(',')
+
+        # Convert string to floats, and report error if exception raised
+        try:
+            st.session_state.current_data_point = [float(item) for item in individual_points]
+        except ValueError:
+            st.error('Please enter numeric data in the format: #,#')
+            st.session_state.current_data_point = []
 
     left, mid, right = st.beta_columns(3)
     with left:
         if st.button('Add row'):
-            if len(newDataFloat) == 2:
-                cached_data.append({'Water height (cm)': newDataFloat[0],
-                                    'Time (s)': newDataFloat[1]})
+            add_row = True
+
+            # If data point format is incorrect, do not add row
+            if len(st.session_state.current_data_point) != 2:
+                add_row = False
+                st.warning('Please enter 2 numbers at a time: water height and time')
             else:
-                st.write('You need to add exactly 2 numbers at a time: water height and time')
+                if len(st.session_state.data_points) > 0:
+                    # Access most recent data point
+                    last_point = st.session_state.data_points[-1]
+
+                    # If water height is increasing, do not add row
+                    if st.session_state.current_data_point[0] > last_point['Water height (cm)']:
+                        add_row = False
+                        st.warning('Water height should not be increasing')
+
+                    # If time value is not equal to most recent time value, do not add row
+                    if st.session_state.current_data_point[1] <= last_point['Time (s)']:
+                        add_row = False
+                        st.warning('Consecutive time values must increase')
+
+            if add_row:
+                st.session_state.data_points.append(
+                    {'Water height (cm)': st.session_state.current_data_point[0],
+                     'Time (s)': st.session_state.current_data_point[1]})
+
     with mid:
         if st.button('Remove last row'):
-            if len(cached_data) > 0:
-                cached_data.pop()
+            if len(st.session_state.data_points) > 0:
+                st.session_state.data_points.pop()
     with right:
         if st.button('Clear all'):
-            if len(cached_data) > 0:
-                for i in range(len(cached_data)):
-                    cached_data.pop()
+            st.session_state.current_data_point.clear()
+            st.session_state.data_points.clear()
 
-    df_cache = pd.DataFrame(cached_data)
-
-    if df_cache.size > 1:
-        st.write(df_cache)
+    # Display dataframe of points
+    points_df = pd.DataFrame(st.session_state.data_points)
+    if points_df.size > 1:
+        st.write(points_df)
 
     # Display data plots
-    if df_cache.size > 2:
+    if st.session_state.current_sample_height > 0 and points_df.size > 2:
         # Initialize figure
         maxH = 0
         maxV = 0
@@ -82,26 +100,27 @@ def dataProcessing(cached_name, cached_height, cached_data, cached_dataSets):
         fig, (ax1a, ax1b) = plt.subplots(nrows=1, ncols=2, figsize=(8, 3))
         colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
 
-        heights = df_cache['Water height (cm)']
-        times = df_cache['Time (s)']
-        vels = [-(h2 - h1) / (t2 - t1) for h1, h2, t1, t2 in
-                zip(heights[0:-1], heights[1::], times[0:-1], times[1::])]
-        heightsAv = [(h1 + h2) / 2 / cached_height[0]['Soil sample height (cm)'] for h1, h2 in
-                     zip(heights[1::], heights[0:-1])]
+        heights = points_df['Water height (cm)']
+        times = points_df['Time (s)']
+        velocity = [-(h2 - h1) / (t2 - t1) for h1, h2, t1, t2 in
+                    zip(heights[0:-1], heights[1::], times[0:-1], times[1::])]
+        heights_average = [(h1 + h2) / 2 / st.session_state.current_sample_height for h1, h2 in
+                           zip(heights[1::], heights[0:-1])]
 
-        maxH = max([maxH, max(heightsAv)])
-        maxV = max([maxV, max(vels)])
+        maxH = max([maxH, max(heights_average)])
+        maxV = max([maxV, max(velocity)])
 
         ax1a.scatter(x=heights,
                      y=times,
                      marker='o')
-        ax1b.scatter(x=heightsAv,
-                     y=vels,
+        ax1b.scatter(x=heights_average,
+                     y=velocity,
                      marker='o')
 
         # Curve fitting
-        [mdl, mdlcov] = curve_fit(linFunc, heightsAv, vels)  # Units of s
-        MyConductivity = mdl * cached_height[0]['Soil sample height (cm)'] * 60
+        linFunc = lambda x, a: a * x
+        [mdl, mdlcov] = curve_fit(linFunc, heights_average, velocity)  # Units of s
+        conductivity = mdl * st.session_state.current_sample_height * 60
 
         # Plot fit
         linH = np.linspace(0, maxH)
@@ -139,16 +158,13 @@ def dataProcessing(cached_name, cached_height, cached_data, cached_dataSets):
                     'hydraulic conductivity $K$. '
                     '*Can you explain now how the hydraulic conductivity is related '
                     'to the speed that water drains, but is not exactly the same?*')
-        st.subheader('Your sample "' + cached_name[0]['Sample name'] + '" has a hydraulic conductivity of '
-                     + '{:.2f} cm/min'.format(MyConductivity[0]))
+        st.subheader('Your sample "' + st.session_state.current_sample_name + '" has a hydraulic conductivity of '
+                     + '{:.2f} cm/min'.format(conductivity[0]))
 
         # Sample saving
         if st.button('Save this sample data set'):
-            sampleNameList = ['' for i in range(len(df_cache))]
-            sampleNameList[0] = cached_name[0]['Sample name']
-            cached_heightList = ['' for i in range(len(df_cache))]
-            cached_heightList[0] = cached_height[0]['Soil sample height (cm)']
-            cached_dataSets.append(pd.DataFrame({'Sample name': sampleNameList,
-                                                 'Sample height (cm)': cached_heightList,
-                                                 'Time (s)': df_cache['Time (s)'],
-                                                 'Water height (cm)': df_cache['Water height (cm)']}))
+            # Create Sample object
+            current_sample = Sample(st.session_state.current_sample_height,
+                                    points_df)
+
+            st.session_state.samples[st.session_state.current_sample_name] = current_sample
