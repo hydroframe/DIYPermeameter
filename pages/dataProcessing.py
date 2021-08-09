@@ -110,8 +110,8 @@ def dataProcessing():
         maxH = max([maxH, max(heights_average)])
         maxV = max([maxV, max(velocity)])
 
-        ax1a.scatter(x=heights,
-                     y=times,
+        ax1a.scatter(x=times,
+                     y=heights,
                      marker='o')
         ax1b.scatter(x=heights_average,
                      y=velocity,
@@ -127,8 +127,8 @@ def dataProcessing():
         ax1b.plot(linH, linH * mdl, '--', linewidth=2)
 
         # Format axes
-        ax1a.set_xlabel('Water Height (cm)', fontsize=12)
-        ax1a.set_ylabel('Time (s)', fontsize=12)
+        ax1a.set_ylabel('Water Height (cm)', fontsize=12)
+        ax1a.set_xlabel('Time (s)', fontsize=12)
         ax1b.set_xlabel('Water Height / Soil height', fontsize=12)
         ax1b.set_ylabel('Water speed (cm/s)', fontsize=12)
         ax1b.set_xlim([0, 1.1 * maxH])

@@ -168,8 +168,8 @@ def classData(image_path):
             maxH = max([maxH, max(heights_average)])
             maxV = max([maxV, max(velocity)])
 
-            ax1a.scatter(x=heights,
-                         y=times,
+            ax1a.scatter(x=times,
+                         y=heights,
                          marker='o', label=sample_name)
             ax1b.scatter(x=heights_average,
                          y=velocity,
@@ -195,8 +195,8 @@ def classData(image_path):
             ax1b.plot(linH, linH * mdl, '--', linewidth=2)
 
         # Format axes
-        ax1a.set_xlabel('Water Height (cm)', fontsize=12)
-        ax1a.set_ylabel('Time (s)', fontsize=12)
+        ax1a.set_ylabel('Water Height (cm)', fontsize=12)
+        ax1a.set_xlabel('Time (s)', fontsize=12)
         ax1a.legend([sample_name for sample_name in st.session_state.samples],
                     fontsize=12)
 
@@ -274,10 +274,11 @@ def classData(image_path):
                      s=df_cond['name'][i],
                      fontsize=12, horizontalalignment='center',
                      verticalalignment='bottom')
-
+		sample_increment=0
         for sample_name, result in st.session_state.results.items():
-            ax2.scatter(x=result['Conductivity'][0], y=-1 - num_real - (i + 1))
-            plt.text(x=result['Conductivity'][0], y=-1 - num_real - (i + 1),
+            sample_increment=sample_increment+1
+			ax2.scatter(x=result['Conductivity'][0], y= - num_real - sample_increment )
+            plt.text(x=result['Conductivity'][0], y= - num_real - sample_increment,
                      s='  ' + sample_name,
                      fontsize=12, horizontalalignment='left',
                      verticalalignment='center')
