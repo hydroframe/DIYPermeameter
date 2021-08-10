@@ -274,11 +274,11 @@ def classData(image_path):
                      s=df_cond['name'][i],
                      fontsize=12, horizontalalignment='center',
                      verticalalignment='bottom')
-		sample_increment=0
-        for sample_name, result in st.session_state.results.items():
-            sample_increment=sample_increment+1
-			ax2.scatter(x=result['Conductivity'][0], y= - num_real - sample_increment )
-            plt.text(x=result['Conductivity'][0], y= - num_real - sample_increment,
+
+        for sample_name, sample_increment in zip(st.session_state.results, range(num_real)):
+            result = st.session_state.results[sample_name]
+            ax2.scatter(x=result['Conductivity'][0], y=-num_real-sample_increment)
+            plt.text(x=result['Conductivity'][0], y=-num_real-sample_increment,
                      s='  ' + sample_name,
                      fontsize=12, horizontalalignment='left',
                      verticalalignment='center')
