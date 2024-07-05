@@ -1,14 +1,19 @@
 # -*- coding: utf-8 -*-
 """
-Spyder Editor
+DIYPermeameter main function for StreamLit.
 
-This is a temporary script file.
+Note: This now uses app_pages folder instead of pages folder to avoid weird
+UI display of the pages folder in the UI because of a recent streamlit
+feature supporting multiple page feature.
+See:
+  https://discuss.streamlit.io/t/i-upgraded-my-streamlit-version-and-now-contents-of-my-pages-folder-show-up-in-the-side-bar/29271
+
 """
 import streamlit as st
-from pages.dataProcessing import dataProcessing
-from pages.splashPage import splashPage
-from pages.classData import classData
-from pages.howBuild import howBuild
+from app_pages.dataProcessing import dataProcessing
+from app_pages.splashPage import splashPage
+from app_pages.classData import classData
+from app_pages.howBuild import howBuild
 
 
 ##############################################################################
