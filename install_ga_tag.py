@@ -4,7 +4,7 @@
     inserts the Google Analytics tag into the HTML <head> tag of the index.html file of streamlit installed package.
 
     Usage:
-        python install_ga_tag.py GA-000000000
+        python install_ga_tag.py G-000000000
     Pass the GA tag of the GA project to track DIYPermeameter.
     Make sure the python virtual environment being used is a VM private to DiyPermeameter and not
     a shared common virtual environment.
@@ -17,12 +17,12 @@ def main():
     """Main routine to update the steamlit package of the python virtual environment"""
 
     ga_tag = sys.argv[1] if len(sys.argv) > 1 else None
-    if ga_tag is None or "GA-" not in ga_tag:
-        print("You must specify a google analytics tag in the form GA-xxxxxxx")
+    if ga_tag is None or "G-" not in ga_tag:
+        print("You must specify a google analytics tag in the form G-xxxxxxx")
         return
     ga_script = """
     <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id={ga_tag}"></script>
     <script id='google_analytics'>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
@@ -42,7 +42,7 @@ def main():
     with open(path, "r") as fp:
         contents = fp.read()
         if "googletagmanager" in contents:
-            print("Streamlit package already contains GA tag")
+            print(f"Streamlit package already contains GA tag in '{path}'.")
             return
         contents = contents.replace("<head>", f"<head>{ga_script}")
     if contents:
